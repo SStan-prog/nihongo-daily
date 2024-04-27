@@ -5,8 +5,6 @@
   export let form: ActionData;
 
   import Quiz from '$lib/components/quiz/quiz.svelte';
-
-  console.log(form);
 </script>
 
 <Quiz {data} formRes={form} />

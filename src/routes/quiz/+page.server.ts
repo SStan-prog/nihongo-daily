@@ -13,12 +13,28 @@ export const load: PageServerLoad = async() => {
     
       function selectRandomQuestions(array: any[]) {
         let selectedQuestions = [];
-        while (selectedQuestions.length < 1) {
+        while (selectedQuestions.length < 2) {
           let randomIndex = getRandomInt(0, array.length - 1);
           selectedQuestions.push(array[randomIndex]);
         }
         return selectedQuestions;
       }
+
+       //ANSWER RANDOMIZE LOGIC
+        const shuffleAnswers = (answers: string[]) => {
+            for (let i = answers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [answers[i], answers[j]] = [answers[j], answers[i]];
+            }
+
+            return answers;
+        };
+
+   
+        questions.data.forEach((question) => {
+            let answers = [...Object.values(question.incorrect_answers), question.yomi];
+            question['answers'] = shuffleAnswers(answers)
+        })
 
 	return {
         formRes: await superValidate(zod(quizSchema)),
@@ -29,16 +45,8 @@ export const load: PageServerLoad = async() => {
 export const actions: Actions = {
     default: async (event) => {
       const form = await superValidate(event, zod(quizSchema));
-
-      return{
-        form
+      if(form.valid){
+        return { form };
       }
-
-    //   if(form.valid){
-
-    //     const answers = form.data;
-    //     console.log(answers)
-    //     return { answers };
-    //   }
     },
   };
